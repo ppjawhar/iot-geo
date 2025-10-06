@@ -1,35 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useMemo, useRef, useState } from "react";
+import "./firebase";
+import rootData from "./data/geoHierarchy";
+import type { LocationNode, Node } from "./types";
+import { replaceSubtree, setStatusDeep, toggleStatus } from "./lib/tree";
+import MapView from "./components/MapView";
+import Tree from "./components/Tree";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function clone<T>(x: T): T {
+  return structuredClone ? structuredClone(x) : JSON.parse(JSON.stringify(x));
 }
 
-export default App
+export default function App() {
+  const [root, setRoot] = useState<LocationNode>(clone(rootData));
+  // expanded: which locations are expanded (children visible)
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const mapRef = useRef<google.maps.Map | null>(null);
+
+  const onToggleExpand = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const onToggleStatusCascade = (id: string) => {
+    setRoot((prev) =>
+      replaceSubtree(prev, id, (node: Node) => {
+        // For locations: cascade to descendants; for devices: just toggle self
+        return node.type === "location" ? setStatusDeep(node, node.status === "on" ? "off" : "on") : toggleStatus(node);
+      }) as LocationNode
+    );
+  };
+
+  const onCenterOnNode = (n: Node) => {
+    if (!mapRef.current) return;
+    mapRef.current.panTo(n.coordinates);
+    mapRef.current.setZoom(n.type === "location" ? 12 : 14);
+  };
+
+  const mapCallbacks = useMemo(
+    () => ({
+      onLoad: (map: google.maps.Map) => (mapRef.current = map),
+      onUnmount: () => (mapRef.current = null),
+    }),
+    []
+  );
+
+  const resetAll = () => {
+    setRoot(clone(rootData));
+    setExpanded(new Set());
+  };
+
+  return (
+    <div className="app">
+      <aside className="sidebar">
+        <h3 style={{ margin: "4px 0 10px" }}>Hierarchy</h3>
+        <Tree
+          root={root}
+          expanded={expanded}
+          onToggleExpand={onToggleExpand}
+          onToggleStatusCascade={onToggleStatusCascade}
+          onCenterOnNode={onCenterOnNode}
+        />
+        <hr style={{ margin: "12px 0" }} />
+        <button className="btn" onClick={resetAll}>Reset data</button>
+      </aside>
+
+      <main className="map">
+        <MapView
+          root={root}
+          expanded={expanded}
+          onToggleExpand={onToggleExpand}
+          onToggleStatusCascade={onToggleStatusCascade}
+        />
+      </main>
+    </div>
+  );
+}

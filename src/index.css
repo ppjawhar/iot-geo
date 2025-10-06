@@ -1,68 +1,54 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+:root { font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; }
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.app {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: 100%;
+  height: 100%;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+.sidebar {
+  border-right: 1px solid #e5e7eb;
+  padding: 12px;
+  overflow: auto;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+.map {
+  position: relative;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
+.row { margin: 2px 0; }
+.row-main {
+  display: grid;
+  grid-template-columns: 24px 24px 1fr auto auto;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+.row-main:hover { background: #f7f8fa; }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.chev { border: none; background: transparent; cursor: pointer; font-size: 14px; }
+.chev-placeholder { display: inline-block; width: 14px; }
+
+.badge {
+  width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 999px; font-size: 12px; color: white;
 }
+.badge.loc { background: #2D7EF7; }
+.badge.dev { background: #2ECC71; }
+
+.name { cursor: pointer; }
+.status { font-size: 12px; text-transform: uppercase; color: #6b7280; margin: 0 6px; }
+.status.on { color: #059669; }
+.status.off { color: #6b7280; }
+
+.btn {
+  background: #111827; color: white; border: none;
+  padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px;
+}
+.btn:hover { opacity: 0.9; }
+
+.children { margin-left: 26px; border-left: 1px dashed #e5e7eb; padding-left: 8px; }
