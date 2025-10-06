@@ -40,13 +40,7 @@ export default function App() {
     mapRef.current.setZoom(n.type === "location" ? 12 : 14);
   };
 
-  const mapCallbacks = useMemo(
-    () => ({
-      onLoad: (map: google.maps.Map) => (mapRef.current = map),
-      onUnmount: () => (mapRef.current = null),
-    }),
-    []
-  );
+  
 
   const resetAll = () => {
     setRoot(clone(rootData));
