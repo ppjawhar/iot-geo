@@ -1,5 +1,5 @@
 import type { LocationNode, Node } from "../types";
-import { findNode } from "../lib/tree";
+
 import clsx from "clsx";
 
 type Props = {

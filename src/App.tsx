@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./firebase";
 import rootData from "./data/geoHierarchy";
 import type { LocationNode, Node } from "./types";
